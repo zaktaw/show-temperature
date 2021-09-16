@@ -18,14 +18,19 @@ function App() {
 
     const url = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=59.9139&lon=10.7522';
 
-    const res = await fetch(url, requestOptions).then(setLoading(false));
-    const data = await res.json()
-    
-    let temperatureForNextHour = getTemperatureForNextHour(data.properties.timeseries);
-    setTemperatue(temperatureForNextHour);
+    fetch(url, requestOptions)
+      .then(res => {
+        res.json()
+        .then(data => {
+          let temperatureForNextHour = getTemperatureForNextHour(data.properties.timeseries);
+          setTemperatue(temperatureForNextHour);
+          setLoading(false)
+        })
+      });
   }
 
   function getTemperatureForNextHour(timeseries) {
+    
     let nextHour = new Date().getHours() + 1;
     if (nextHour == 25) nextHour = 0;
     
@@ -41,7 +46,7 @@ function App() {
   return (
     <div>
       { loading ? <LoopIcon /> : <Button variant="contained" onClick={getWeatherData}>Show temperature</Button> }
-      { temperature ? <p>The temperature for the next hour is {temperature} degrees celsius.</p> : <p></p>}
+      { temperature ? <p>The temperature for the next hour is {temperature} degrees celsius.</p> : null}
     </div>  
   );
 }
