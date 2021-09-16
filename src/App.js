@@ -21,9 +21,21 @@ function App() {
     const res = await fetch(url, requestOptions).then(setLoading(false));
     const data = await res.json()
     
-    // index 3 = this hour. Index 4 = next hour
-    let temperatureForNextHour = data.properties.timeseries[4].data.instant.details.air_temperature;
+    let temperatureForNextHour = getTemperatureForNextHour(data.properties.timeseries);
     setTemperatue(temperatureForNextHour);
+  }
+
+  function getTemperatureForNextHour(timeseries) {
+    let nextHour = new Date().getHours() + 1;
+    if (nextHour == 25) nextHour = 0;
+    
+    for (let item of timeseries) {
+
+      let temperature = item.data.instant.details.air_temperature;
+      let timeInHours = item.time.split("T")[1].split(":")[0];
+
+      if (timeInHours == nextHour) return temperature;
+    }
   }
 
   return (
